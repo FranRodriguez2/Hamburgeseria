@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burger Proa</title>
+  <style>
+    body {
+      font-family: 'Verdana', sans-serif;
+      background-color: #fff8f0;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: orange;
+      color: #fff;
+      padding: 12px 0;
+    }
+
+    main {
+      margin: 25px;
+    }
+
+    .menu, .carrito {
+      border: 2px solid orange;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 25px;
+      background-color: #fff;
+    }
+
+    button {
+      background-color: orange;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 5px 0;
+    }
+
+    button:hover {
+      background-color: darkorange;
+    }
+
+    .item {
+      border-bottom: 1px solid #ccc;
+      margin: 12px 0;
+      padding: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Burger Proa</h1>
+  </header>
+
+  <main>
+    <h2>Ingresa tu nombre</h2>
+    <form id="usuarioForm">
+      <input type="text" id="nombreInput" placeholder="Escribe tu nombre" required>
+      <button type="submit">Enviar</button>
+    </form>
+    <p id="bienvenida"></p>
+
+    <div class="menu">
+      <h2>Menú de hamburguesas</h2>
+      <div id="menuHamburguesas"></div>
+    </div>
+
+    <div class="carrito">
+      <h2>Tu pedido</h2>
+      <div id="carritoItems"></div>
+      <p id="montoTotal"></p>
+    </div>
+  </main>
+
+  <script>
+    function Persona(nombre) {
+      this.nombre = nombre;
+    }
+    function Hamburguesa(nombre, precio) {
+      this.nombre = nombre;
+      this.precio = precio;
+    }
+    function MiCarrito() {
+      this.items = [];
+
+      this.agregar = function(hamb) {
+        this.items.push(hamb);
+        this.actualizarVista();
+      }
+
+      this.quitar = function(indice) {
+        this.items.splice(indice, 1);
+        this.actualizarVista();
+      }
+
+      this.total = function() {
+        return this.items.reduce((acc, el) => acc + el.precio, 0);
+      }
+
+      this.actualizarVista = function() {
+        const contenedor = document.getElementById("carritoItems");
+        const totalCont = document.getElementById("montoTotal");
+        contenedor.innerHTML = "";
+
+        if (this.items.length === 0) {
+          contenedor.innerHTML = "<p>No hay hamburguesas en el carrito.</p>";
+          totalCont.innerText = "";
+          return;
+        }
+
+        this.items.forEach((h, i) => {
+          contenedor.innerHTML += `
+            <div class="item">
+              ${h.nombre} - $${h.precio}
+              <button onclick="miCarrito.quitar(${i})">Quitar</button>
+            </div>
+          `;
+        });
+
+        totalCont.innerText = "Total: $" + this.total();
+      }
+    }
+    let usuario = null;
+    const miCarrito = new MiCarrito();
+
+    const menuHamburguesas = [
+      new Hamburguesa("Clásica", 8200),
+      new Hamburguesa("Doble Queso", 9300),
+      new Hamburguesa("BBQ", 10500),
+      new Hamburguesa("Quíntuple", 14600)
+    ];
+
+    const contMenu = document.getElementById("menuHamburguesas");
+    menuHamburguesas.forEach((h, i) => {
+      const div = document.createElement("div");
+      div.classList.add("item");
+      div.innerHTML = `${h.nombre} - $${h.precio} <button onclick="agregarCarrito(${i})">Agregar</button>`;
+      contMenu.appendChild(div);
+    });
+    function agregarCarrito(idx) {
+      if (!usuario) {
+        alert("Por favor ingresa tu nombre antes de pedir.");
+        return;
+      }
+      miCarrito.agregar(menuHamburguesas[idx]);
+    }
+
+    document.getElementById("usuarioForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombreInput").value.trim();
+      if (nombre) {
+        usuario = new Persona(nombre);
+        document.getElementById("bienvenida").innerText = `Hola, ${usuario.nombre}!`;
+        this.reset();
+      }
+    });
+  </script>
+</body>
+</html>
+
