@@ -5,161 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Burger Proa</title>
   <style>
-    body {
-      font-family: 'Verdana', sans-serif;
-      background-color: #fff8f0;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
+    body { 
+      font-family: Arial, sans-serif; 
+      background-color: #fff8f0; 
+      margin: 0; padding: 0; 
+      }
 
-    header {
-      background-color: orange;
-      color: #fff;
-      padding: 12px 0;
-    }
+    header { 
+      background-color: orange; 
+      color: #fff; 
+      padding: 10px; 
+      text-align: center; 
+      }
 
-    main {
-      margin: 25px;
-    }
+    main { 
+      max-width: 600px;
+      margin: 20px auto; 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 10px; 
+      }
 
-    .menu, .carrito {
-      border: 2px solid orange;
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 25px;
-      background-color: #fff;
-    }
-
-    button {
-      background-color: orange;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 5px 0;
-    }
-
-    button:hover {
-      background-color: darkorange;
-    }
-
-    .item {
-      border-bottom: 1px solid #ccc;
-      margin: 12px 0;
-      padding: 6px 0;
-    }
+    input, button { 
+      width: 100%; 
+      margin-bottom: 10px; 
+      padding: 8px; 
+      }
+    button { 
+      background: orange; 
+      color: #fff; 
+      border: none; 
+      cursor: pointer; 
+      }
+    .item, .carritoItem { 
+      background: #ffeccc; 
+      padding: 10px; 
+      border-radius: 5px; 
+      margin-bottom: 10px; 
+      }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Burger Proa</h1>
-  </header>
 
-  <main>
-    <h2>Ingresa tu nombre</h2>
-    <form id="usuarioForm">
-      <input type="text" id="nombreInput" placeholder="Escribe tu nombre" required>
-      <button type="submit">Enviar</button>
-    </form>
-    <p id="bienvenida"></p>
+<header>
+  <h1>Burger Proa</h1>
+</header>
 
-    <div class="menu">
-      <h2>Menú de hamburguesas</h2>
-      <div id="menuHamburguesas"></div>
-    </div>
+<main>
 
-    <div class="carrito">
-      <h2>Tu pedido</h2>
-      <div id="carritoItems"></div>
-      <p id="montoTotal"></p>
-    </div>
-  </main>
+  <h2>Ingresar Usuario</h2>
+  <input type="text" id="nombreUsuario" placeholder="Tu nombre">
+  <button onclick="crearUsuario()">Guardar nombre</button>
+  <p id="bienvenida"></p>
 
-  <script>
-    function Persona(nombre) {
+  <h2>Menú de Hamburguesas</h2>
+  <div id="listaMenu"></div>
+
+  <h2>Carrito</h2>
+  <div id="listaCarrito"></div>
+  <p id="totalCarrito"></p>
+
+</main>
+
+<script>
+  class Usuario {
+    constructor(nombre) {
       this.nombre = nombre;
     }
-    function Hamburguesa(nombre, precio) {
+  }
+
+  class Hamburguesa {
+    constructor(nombre, precio) {
       this.nombre = nombre;
       this.precio = precio;
     }
-    function MiCarrito() {
+  }
+
+  class Carrito {
+    constructor() {
       this.items = [];
-
-      this.agregar = function(hamb) {
-        this.items.push(hamb);
-        this.actualizarVista();
-      }
-
-      this.quitar = function(indice) {
-        this.items.splice(indice, 1);
-        this.actualizarVista();
-      }
-
-      this.total = function() {
-        return this.items.reduce((acc, el) => acc + el.precio, 0);
-      }
-
-      this.actualizarVista = function() {
-        const contenedor = document.getElementById("carritoItems");
-        const totalCont = document.getElementById("montoTotal");
-        contenedor.innerHTML = "";
-
-        if (this.items.length === 0) {
-          contenedor.innerHTML = "<p>No hay hamburguesas en el carrito.</p>";
-          totalCont.innerText = "";
-          return;
-        }
-
-        this.items.forEach((h, i) => {
-          contenedor.innerHTML += `
-            <div class="item">
-              ${h.nombre} - $${h.precio}
-              <button onclick="miCarrito.quitar(${i})">Quitar</button>
-            </div>
-          `;
-        });
-
-        totalCont.innerText = "Total: $" + this.total();
-      }
-    }
-    let usuario = null;
-    const miCarrito = new MiCarrito();
-
-    const menuHamburguesas = [
-      new Hamburguesa("Clásica", 8200),
-      new Hamburguesa("Doble Queso", 9300),
-      new Hamburguesa("BBQ", 10500),
-      new Hamburguesa("Quíntuple", 14600)
-    ];
-
-    const contMenu = document.getElementById("menuHamburguesas");
-    menuHamburguesas.forEach((h, i) => {
-      const div = document.createElement("div");
-      div.classList.add("item");
-      div.innerHTML = `${h.nombre} - $${h.precio} <button onclick="agregarCarrito(${i})">Agregar</button>`;
-      contMenu.appendChild(div);
-    });
-    function agregarCarrito(idx) {
-      if (!usuario) {
-        alert("Por favor ingresa tu nombre antes de pedir.");
-        return;
-      }
-      miCarrito.agregar(menuHamburguesas[idx]);
     }
 
-    document.getElementById("usuarioForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const nombre = document.getElementById("nombreInput").value.trim();
-      if (nombre) {
-        usuario = new Persona(nombre);
-        document.getElementById("bienvenida").innerText = `Hola, ${usuario.nombre}!`;
-        this.reset();
-      }
-    });
-  </script>
+    agregar(h) {
+      this.items.push(h);
+    }
+
+    quitar(i) {
+      this.items.splice(i, 1);
+    }
+
+    total() {
+      return this.items.reduce((acc, el) => acc + el.precio, 0);
+    }
+  }
+
+  var usuario = null;
+  var carrito = new Carrito();
+
+  var menuHamburguesas = [
+    new Hamburguesa("Clásica", 8200),
+    new Hamburguesa("Doble Queso", 9300),
+    new Hamburguesa("BBQ", 10500),
+    new Hamburguesa("Quíntuple", 14600)
+  ];
+
+  function crearUsuario() {
+    var nombre = document.getElementById("nombreUsuario").value;
+
+    if (nombre === "") {
+      alert("Ingresa un nombre");
+      return;
+    }
+
+    usuario = new Usuario(nombre);
+
+    document.getElementById("bienvenida").innerText =
+      "Hola " + usuario.nombre + ", ¡bienvenido a Burger Proa!";
+
+    document.getElementById("nombreUsuario").value = "";
+  }
+
+  function agregarCarrito(i) {
+    if (!usuario) {
+      alert("Primero ingresa tu nombre.");
+      return;
+    }
+
+    carrito.agregar(menuHamburguesas[i]);
+    mostrarCarrito();
+  }
+
+  function quitarCarrito(i) {
+    carrito.quitar(i);
+    mostrarCarrito();
+  }
+
+  function mostrarMenu() {
+    var cont = document.getElementById("listaMenu");
+    cont.innerHTML = "";
+
+    for (var i = 0; i < menuHamburguesas.length; i++) {
+      var h = menuHamburguesas[i];
+
+      var div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = h.nombre + " - $" + h.precio +
+        `<button onclick="agregarCarrito(${i})">Agregar</button>`;
+
+      cont.appendChild(div);
+    }
+  }
+
+  function mostrarCarrito() {
+    var cont = document.getElementById("listaCarrito");
+    var total = document.getElementById("totalCarrito");
+
+    cont.innerHTML = "";
+
+    if (carrito.items.length === 0) {
+      cont.innerHTML = "<p>Tu carrito está vacío</p>";
+      total.innerHTML = "";
+      return;
+    }
+
+    for (var i = 0; i < carrito.items.length; i++) {
+      var h = carrito.items[i];
+
+      var div = document.createElement("div");
+      div.className = "carritoItem";
+      div.innerHTML = h.nombre + " - $" + h.precio +
+        ` <button onclick="quitarCarrito(${i})">Quitar</button>`;
+
+      cont.appendChild(div);
+    }
+
+    total.innerHTML = "Total: $" + carrito.total();
+  }
+
+  mostrarMenu();
+
+</script>
+
 </body>
 </html>
 
